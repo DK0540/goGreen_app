@@ -1,7 +1,8 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "./Component/LoginPage";
 import PopupForm from "./Component/PopupForm";
+import HomePage from "./Component/HomePage";
 
 const App = () => {
   return (
@@ -9,6 +10,7 @@ const App = () => {
       <div>
         <Routes>
           <Route path="/" element={<LoginPage />} />
+          <Route path="/home" element={<HomePage />} />
           <Route path="/popup" element={<PopupForm />} />
         </Routes>
       </div>

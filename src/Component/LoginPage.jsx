@@ -1,11 +1,11 @@
+
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import Cookies from "js-cookie";
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./Login.css"; // Import the CSS file
 import img from "./assets/vlogo.png";
-
-import HomePage from "./HomePage"; 
-import styled from "styled-components";
-import Cookies from "js-cookie";
 
 
 const ErrorMessage = styled.div`
@@ -13,55 +13,47 @@ const ErrorMessage = styled.div`
   margin: 10px;
 `;
 
-
 const LoginPage = () => {
-  
-    const [username, setUsername] = useState("");
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  
   const [errorMessage, setErrorMessage] = useState("");
-  const [userData, setUserData] = useState(null); // State to store user data after login
-  const [isLoggedIn, setLoggedIn] = useState(false); // State to track login status
-
+  const [isLoggedIn, setLoggedIn] = useState(false);
 
   const handleLogin = async () => {
-  try {
-    const response = await fetch("/api/pwa/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        user_name: username,
-        user_password: password,
-      }),
-    });
+    try {
+      const response = await fetch("/api/pwa/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_name: username,
+          user_password: password,
+        }),
+      });
 
-    if (response.ok) {
-      const userData = await response.json();
-      console.log(userData);
-      setUserData(userData);
-      setLoggedIn(true);
+      if (response.ok) {
+        const userData = await response.json();
+        console.log(userData);
+        setLoggedIn(true);
 
-      // Store the token in localStorage
-      Cookies.set("userToken", userData.token);
-    } else {
-      const errorData = await response.json();
-      setErrorMessage(errorData.message || "Login failed");
+        // Store the token in localStorage
+        Cookies.set("userToken", userData.token);
+        Cookies.set("username", username);
+        // Navigate to the home page
+        navigate("/home"); // Update the route path based on your requirement
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.message || "Login failed");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setErrorMessage("An error occurred during login");
     }
-  } catch (error) {
-    console.error("Login error:", error);
-    setErrorMessage("An error occurred during login");
-  }
-};
+  };
 
-
-  // Render the HomePage component if logged in
-  if (isLoggedIn) {
-    return <HomePage username={username} userData={userData}/>;
-  }
-
-
+  // Render the login form
   return (
     <div className="login-container">
       <img src={img} alt="Logo" className="logo" />
@@ -99,3 +91,6 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
+
+

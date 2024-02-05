@@ -90,7 +90,9 @@ const FarmerChallanSection = ({
   CameraView,
   handleCaptureChallan,
   handleChallanCameraClose,
+  challanpic,
 }) => {
+  const defaultImageUrl = `https://sfamsserver.in/uploads/docs/${challanpic}`;
   return (
     <FarmerChallanContainer id="farmerChallanContainer">
       <Headp>Challan</Headp>
@@ -118,7 +120,15 @@ const FarmerChallanSection = ({
       {challanImage && challanLocation && (
         <FarmerChallanPreview imageUrl={challanImage}></FarmerChallanPreview>
       )}
-      {challanImage ? null : <FarmerChallanText>Empty</FarmerChallanText>}
+      {challanImage ? null : (
+        <FarmerChallanText>
+          <img
+            src={defaultImageUrl}
+            alt="Default"
+            style={{ width: "100%", height: "-webkit-fill-available" }}
+          />
+        </FarmerChallanText>
+      )}
     </FarmerChallanContainer>
   );
 };

@@ -87,6 +87,7 @@ const FarmerInspectionImageCts = ({
   farmerName,
   setInspectionImage,
   setFInspectionImage,
+  inspectpic,
 }) => {
   const [farmerInspectionImage, setFarmerInspectionImage] = useState(null);
   const [showInspectionCamera, setShowInspectionCamera] = useState(false);
@@ -200,7 +201,7 @@ const FarmerInspectionImageCts = ({
     farmerNameTitle,
     inspectionCapturedDateTime,
   ]);
-
+  const defaultImageUrl = `https://sfamsserver.in/uploads/docs/${inspectpic}`;
   return (
     <InspectionContainer id="inspectionContainer">
       <Headp>Pre Inspection Photo</Headp>
@@ -231,7 +232,13 @@ const FarmerInspectionImageCts = ({
         ></FarmerInspectionPreview>
       )}
       {farmerInspectionImage ? null : (
-        <InspectionPhotoText>Empty</InspectionPhotoText>
+        <InspectionPhotoText>
+          <img
+            src={defaultImageUrl}
+            alt="Default"
+            style={{ width: "100%", height: "-webkit-fill-available" }}
+          />
+        </InspectionPhotoText>
       )}
     </InspectionContainer>
   );

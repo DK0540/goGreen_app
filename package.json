@@ -2,6 +2,7 @@
   "name": "responsive-screen",
   "version": "0.1.0",
   "private": true,
+  "homepage":"/pwaApp",
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@ffmpeg/ffmpeg": "^0.12.10",

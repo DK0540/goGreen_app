@@ -86,6 +86,7 @@ const FarmerFilterImage = ({
   farmerNameTitle,
   farmerFather,
   farmerName,
+  postpic,
 }) => {
   const [showFilterCamera, setShowFilterCamera] = useState(false);
   const [filterLocation, setFilterLocation] = useState(null);
@@ -191,7 +192,7 @@ const FarmerFilterImage = ({
     farmerFieldId,
     filterCapturedDateTime,
   ]);
-
+  const defaultImageUrl = `https://sfamsserver.in/uploads/docs/${postpic}`;
   return (
     <FilterImageContainer id="filterImageContainer">
       <Headp>Filter</Headp>
@@ -220,7 +221,13 @@ const FarmerFilterImage = ({
       {farmerFilterImage && filterLocation ? (
         <FarmerFilterPreview imageUrl={farmerFilterImage} />
       ) : (
-        <FilterPhotoText>Empty</FilterPhotoText>
+        <FilterPhotoText>
+          <img
+            src={defaultImageUrl}
+            alt="Default"
+            style={{ width: "100%", height: "-webkit-fill-available" }}
+          />
+        </FilterPhotoText>
       )}
     </FilterImageContainer>
   );

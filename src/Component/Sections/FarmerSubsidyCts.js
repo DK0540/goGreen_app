@@ -85,6 +85,7 @@ const FarmerSubsidySection = ({
   farmerFather,
   farmerName,
   setSubsidyImage,
+  sbsidypic,
 }) => {
   const [farmerSubsidyImage, setFarmerSubsidyImage] = useState(null);
   const [showSubsidyCamera, setShowSubsidyCamera] = useState(false);
@@ -191,10 +192,10 @@ const FarmerSubsidySection = ({
     farmerNameTitle,
     subsidyCapturedDateTime,
   ]);
-
+  const defaultImageUrl = `https://sfamsserver.in/uploads/docs/${sbsidypic}`;
   return (
     <SubsidyContainer id="subsidyContainer">
-      <Headp>Subsidy Neft Copy</Headp>
+      <Headp>Farmer Subsidy Copy</Headp>
       <ButtonContainer>
         <CameraButton onClick={handleOpenSubsidyCamera}>
           <FaCamera />
@@ -221,7 +222,15 @@ const FarmerSubsidySection = ({
           imageUrl={farmerSubsidyImage}
         ></FarmerSubsidyPreview>
       )}
-      {farmerSubsidyImage ? null : <SubsidyPhotoText>Empty</SubsidyPhotoText>}
+      {farmerSubsidyImage ? null : (
+        <SubsidyPhotoText>
+          <img
+            src={defaultImageUrl}
+            alt="Default"
+            style={{ width: "100%", height: "-webkit-fill-available" }}
+          />
+        </SubsidyPhotoText>
+      )}
     </SubsidyContainer>
   );
 };

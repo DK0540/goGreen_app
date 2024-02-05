@@ -6,7 +6,7 @@ import HomePage from "./Component/HomePage";
 
 const App = () => {
   return (
-    <Router>
+    <Router basename="/pwaApp">
       <div>
         <Routes>
           <Route path="/" element={<LoginPage />} />

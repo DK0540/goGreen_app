@@ -44,6 +44,17 @@ const FileUploadButton = styled.label`
   font-size: 18px;
 `;
 
+// const FarmerPhotoPrview = styled.div`
+//   max-width: 150px;
+//   height: 130px;
+//   background-color: #2ecc71;
+//   background-image: ${(props) =>
+//     props.imageUrl ? `url(${props.imageUrl})` : "none"};
+//   background-size: cover;
+//   background-position: center;
+//   border-radius: 8px;
+//   margin-top: -81px;
+// `;
 const FarmerPhotoPrview = styled.div`
   max-width: 150px;
   height: 130px;
@@ -88,7 +99,13 @@ const FarmerPhotoSection = ({
   CameraView,
   handleCapture,
   handleCameraClose,
+  fphoto,
 }) => {
+  console.log(fphoto);
+
+  // Correct usage of template literals
+  const defaultImageUrl = `https://sfamsserver.in/uploads/docs/${fphoto}`;
+
   return (
     <FarmerPhotoContainer id="farmerPhotoContainer">
       <Headp>Farmer Photo</Headp>
@@ -117,9 +134,143 @@ const FarmerPhotoSection = ({
       {capturedImage && location && (
         <FarmerPhotoPrview imageUrl={farmerPhoto}></FarmerPhotoPrview>
       )}
-      {farmerPhoto ? null : <FarmerPhotoText>Empty</FarmerPhotoText>}
+      {farmerPhoto ? null : (
+        <FarmerPhotoText>
+          <img
+            src={defaultImageUrl}
+            alt="Default"
+            style={{ width: "100%", height: "-webkit-fill-available" }}
+          />
+        </FarmerPhotoText>
+      )}
     </FarmerPhotoContainer>
   );
 };
 
 export default FarmerPhotoSection;
+///////////////////////////////////////////////////old ok
+// import React from "react";
+// import styled from "styled-components";
+// import { FaCamera, FaFile } from "react-icons/fa";
+
+// const FarmerPhotoContainer = styled.div`
+//   background-color: #f3f3f3ed; /* Set red background color */
+//   padding: 10px;
+//   border-bottom: 2px solid gray;
+//   border-top: 2px solid gray;
+// `;
+
+// const ButtonContainer = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   position: relative;
+//   right: -304px;
+//   gap: 18px;
+//   margin-top: 5px;
+// `;
+
+// const CameraButton = styled.button`
+//   background-color: green; /* Set green button color */
+//   color: white;
+//   padding: 3px;
+//   border: none;
+//   border-radius: 3px;
+//   cursor: pointer;
+
+//   width: 70px;
+//   font-size: 17px;
+//   margin-bottom: 0; /* Remove bottom margin */
+// `;
+
+// const FileUploadButton = styled.label`
+//   background-color: blue; /* Set blue button color */
+//   color: white;
+//   padding: 3px;
+//   border: none;
+//   border-radius: 3px;
+//   cursor: pointer;
+
+//   width: 64px;
+//   text-align: center;
+//   font-size: 18px;
+// `;
+
+// const FarmerPhotoPrview = styled.div`
+//   max-width: 150px;
+//   height: 130px;
+//   background-color: #2ecc71;
+// background-image: ${(props) =>
+//   props.imageUrl ? `url(${props.imageUrl})` : "none"};
+//   background-size: cover;
+//   background-position: center;
+//   border-radius: 8px;
+//   margin-top: -81px;
+// `;
+
+// const FarmerPhotoText = styled.p`
+//   max-width: 150px;
+//   height: 130px;
+
+//   margin-top: -81px;
+
+//   color: #777777;
+//   font-size: 16px;
+
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   border: 2px dashed #777777;
+//   border-radius: 8px;
+// `;
+// const Headp = styled.p`
+//   margin-top: -4px;
+//   font-size: 16px;
+//   font-weight: 500;
+//   color: #818181;
+// `;
+
+// const FarmerPhotoSection = ({
+//   handleOpenCamera,
+//   handleFileUpload,
+//   showCamera,
+//   capturedImage,
+//   location,
+//   farmerPhoto,
+//   CameraView,
+//   handleCapture,
+//   handleCameraClose,
+// }) => {
+//   return (
+//     <FarmerPhotoContainer id="farmerPhotoContainer">
+//       <Headp>Farmer Photo</Headp>
+//       <ButtonContainer>
+//         {/* Camera button */}
+//         <CameraButton onClick={handleOpenCamera}>
+//           <FaCamera />
+//         </CameraButton>
+
+//         {/* File upload button */}
+//         <FileUploadButton>
+//           <FaFile />
+//           <input
+//             type="file"
+//             accept="image/*"
+//             onChange={handleFileUpload}
+//             style={{ display: "none" }}
+//           />
+//         </FileUploadButton>
+//       </ButtonContainer>
+
+//       {/* Farmer Photo Preview or Empty Text */}
+//       {showCamera && (
+//         <CameraView onCapture={handleCapture} onClose={handleCameraClose} />
+//       )}
+//       {capturedImage && location && (
+//         <FarmerPhotoPrview imageUrl={farmerPhoto}></FarmerPhotoPrview>
+//       )}
+//       {farmerPhoto ? null : <FarmerPhotoText>Empty</FarmerPhotoText>}
+//     </FarmerPhotoContainer>
+//   );
+// };
+
+// export default FarmerPhotoSection;

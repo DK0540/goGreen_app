@@ -86,6 +86,7 @@ const FarmerPipeImageCts = ({
   farmerName,
   farmerPipeImage,
   setFarmerPipeImage,
+  postpipepic,
 }) => {
   const [showPipeCamera, setShowPipeCamera] = useState(false);
   const [pipeLocation, setPipeLocation] = useState(null);
@@ -183,7 +184,7 @@ const FarmerPipeImageCts = ({
       image.src = farmerPipeImage;
     }
   }, [farmerPipeImage, pipeLocation, farmerFieldId, pipeCapturedDateTime]);
-
+  const defaultImageUrl = `https://sfamsserver.in/uploads/docs/${postpipepic}`;
   return (
     <PipeImageContainer id="pipeImageContainer">
       <Headp>Post inspection photo with pipe</Headp>
@@ -212,7 +213,13 @@ const FarmerPipeImageCts = ({
       {farmerPipeImage && pipeLocation ? (
         <FarmerPipePreview imageUrl={farmerPipeImage} />
       ) : (
-        <PipePhotoText>Empty</PipePhotoText>
+        <PipePhotoText>
+          <img
+            src={defaultImageUrl}
+            alt="Default"
+            style={{ width: "100%", height: "-webkit-fill-available" }}
+          />
+        </PipePhotoText>
       )}
     </PipeImageContainer>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Camera from "react-html5-camera-photo";
 import "react-html5-camera-photo/build/css/index.css";
 import styled from "styled-components";
@@ -27,7 +27,7 @@ const ButtonContainer = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
-  right: -304px;
+  right: -230px;
   gap: 18px;
   margin-top: 5px;
 `;
@@ -87,10 +87,13 @@ const FarmerPipeImageCts = ({
   farmerPipeImage,
   setFarmerPipeImage,
   postpipepic,
+  farmerCode,
 }) => {
   const [showPipeCamera, setShowPipeCamera] = useState(false);
   const [pipeLocation, setPipeLocation] = useState(null);
   const [pipeCapturedDateTime, setPipeCapturedDateTime] = useState(null);
+  const isFirstRender = useRef(true);
+  const tableAttached = useRef(false);
 
   const handleOpenPipeCamera = () => {
     setShowPipeCamera(true);
@@ -100,10 +103,63 @@ const FarmerPipeImageCts = ({
     setShowPipeCamera(false);
   };
 
+  const drawTable = (imageSrc) => {
+    const image = new Image();
+    image.onload = () => {
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+
+      canvas.width = image.width;
+      canvas.height = image.height;
+
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+      // Draw semi-transparent light green background for the table
+      context.fillStyle = "rgba(27, 190, 173, 0.4)";
+      context.fillRect(10, image.height - 160, canvas.width - 20, 140);
+
+      // Draw table border
+      context.strokeStyle = "black";
+      context.lineWidth = 1;
+      context.strokeRect(10, image.height - 160, canvas.width - 20, 140);
+
+      context.font = "14px Arial";
+      context.fillStyle = "black"; // Change text color to black for better visibility
+
+      const lineHeight = 20; // Adjust line height for better readability
+
+      const tableData = [
+        { label: "Farmer S/No", value: farmerFieldId },
+        { label: "farmerCode", value: farmerCode },
+        { label: "Farmer", value: farmerName },
+        { label: "Latitude", value: "" },
+        { label: "Longitude", value: "" },
+        { label: "Captured on", value: "" },
+      ];
+
+      // Draw table data
+      let y = image.height - 140;
+      tableData.forEach(({ label, value }) => {
+        context.fillText(`${label}:`, 20, y);
+        context.fillText(value, 120, y);
+        y += lineHeight;
+      });
+
+      // Convert the canvas content to a data URL
+      const dataURL = canvas.toDataURL("image/jpeg");
+      setFarmerPipeImage(dataURL);
+    };
+
+    image.src = imageSrc;
+  };
+
   const handleCapturePipe = (dataUri) => {
     setFarmerPipeImage(dataUri);
     setShowPipeCamera(false);
     getPipeLocation();
+
+    // Call the function to draw the table
+    drawTable(dataUri);
   };
 
   const handlePipeFileUpload = (event) => {
@@ -126,8 +182,6 @@ const FarmerPipeImageCts = ({
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
           setPipeLocation({ latitude, longitude });
-          console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-
           setPipeCapturedDateTime(new Date().toLocaleString());
         },
         (error) => {
@@ -140,7 +194,12 @@ const FarmerPipeImageCts = ({
   };
 
   useEffect(() => {
-    if (farmerPipeImage && pipeLocation) {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    if (farmerPipeImage && pipeLocation && !tableAttached.current) {
       const image = new Image();
 
       image.onload = () => {
@@ -152,39 +211,55 @@ const FarmerPipeImageCts = ({
 
         context.drawImage(image, 0, 0, canvas.width, canvas.height);
 
+        // Draw semi-transparent light green background for the table
+        context.fillStyle = "rgba(27, 190, 173, 0.4)";
+        context.fillRect(10, image.height - 160, canvas.width - 20, 140);
+
+        // Draw table border
+        context.strokeStyle = "black";
+        context.lineWidth = 1;
+        context.strokeRect(10, image.height - 160, canvas.width - 20, 140);
+
         context.font = "14px Arial";
-        context.fillStyle = "white";
+        context.fillStyle = "black"; // Change text color to black for better visibility
 
-        const sNoText = `Farmer S/No : ${farmerFieldId}`;
-        const latitudeText = `Latitude   : ${pipeLocation?.latitude.toFixed(
-          7
-        )}`;
-        const longitudeText = `Longitude : ${pipeLocation?.longitude.toFixed(
-          7
-        )}`;
-        const farmerNameText = `Farmer :  ${farmerName}`;
-        const farmerNameTitleText = `${farmerNameTitle} : ${farmerFather}`;
-        const dateTimeText = `Captured on: ${pipeCapturedDateTime}`;
+        const lineHeight = 20; // Adjust line height for better readability
 
-        context.font = "bold 14px Arial"; // Set bold font
-        context.fillText(sNoText, 20, image.height - 140); // Place at the top
-        context.font = "14px Arial"; // Reset font
+        const tableData = [
+          { label: "Farmer S/No", value: farmerFieldId },
+          { label: "farmerCode", value: farmerCode },
+          { label: "Farmer", value: farmerName },
+          { label: "Latitude", value: pipeLocation?.latitude.toFixed(7) },
+          { label: "Longitude", value: pipeLocation?.longitude.toFixed(7) },
+          { label: "Captured on", value: pipeCapturedDateTime },
+        ];
 
-        context.fillText(latitudeText, 10, image.height - 120);
-        context.fillText(longitudeText, 10, image.height - 100);
-        context.fillText(farmerNameText, 10, image.height - 80);
-        context.fillText(farmerNameTitleText, 10, image.height - 60);
-        context.fillText(dateTimeText, 10, image.height - 40);
+        // Draw table data
+        let y = image.height - 140;
+        tableData.forEach(({ label, value }) => {
+          context.fillText(`${label}:`, 20, y);
+          context.fillText(value, 120, y);
+          y += lineHeight;
+        });
 
         // Convert the canvas content to a data URL
         const dataURL = canvas.toDataURL("image/jpeg");
         setFarmerPipeImage(dataURL);
+        tableAttached.current = true;
       };
 
       image.src = farmerPipeImage;
     }
-  }, [farmerPipeImage, pipeLocation, farmerFieldId, pipeCapturedDateTime]);
+  }, [
+    farmerPipeImage,
+    pipeLocation,
+    farmerFieldId,
+    pipeCapturedDateTime,
+    farmerCode,
+  ]);
+
   const defaultImageUrl = `https://sfamsserver.in/uploads/docs/${postpipepic}`;
+
   return (
     <PipeImageContainer id="pipeImageContainer">
       <Headp>Post inspection photo with pipe</Headp>

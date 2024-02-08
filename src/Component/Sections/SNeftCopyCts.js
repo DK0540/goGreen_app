@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Camera from "react-html5-camera-photo";
 import "react-html5-camera-photo/build/css/index.css";
 import styled from "styled-components";
@@ -27,7 +27,7 @@ const ButtonContainer = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
-  right: -304px;
+  right: -230px;
   gap: 18px;
   margin-top: 5px;
 `;
@@ -87,12 +87,17 @@ const SNeftCopyCts = ({
   farmerName,
   setSNeftCopyImage,
   setNeftCopyImage,
+  sbsidypic,
+  farmerCode,
 }) => {
   const [farmerSNeftCopyImage, setFarmerSNeftCopyImage] = useState(null);
   const [showSNeftCopyCamera, setShowSNeftCopyCamera] = useState(false);
   const [sNeftCopyLocation, setSNeftCopyLocation] = useState(null);
   const [sNeftCopyCapturedDateTime, setSNeftCopyCapturedDateTime] =
     useState(null);
+
+  const isFirstRender = useRef(true);
+  const tableAttached = useRef(false);
 
   const handleOpenSNeftCopyCamera = () => {
     setShowSNeftCopyCamera(true);
@@ -102,10 +107,62 @@ const SNeftCopyCts = ({
     setShowSNeftCopyCamera(false);
   };
 
+  ///////////////
+  const drawTable = (imageSrc) => {
+    const image = new Image();
+    image.onload = () => {
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+
+      canvas.width = image.width;
+      canvas.height = image.height;
+
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+      // Draw semi-transparent light green background for the table
+      context.fillStyle = "rgba(27, 190, 173, 0.4)";
+      context.fillRect(10, image.height - 160, canvas.width - 20, 140);
+
+      // Draw table border
+      context.strokeStyle = "black";
+      context.lineWidth = 1;
+      context.strokeRect(10, image.height - 160, canvas.width - 20, 140);
+
+      context.font = "14px Arial";
+      context.fillStyle = "black"; // Change text color to black for better visibility
+
+      const lineHeight = 20; // Adjust line height for better readability
+
+      const tableData = [
+        { label: "Farmer S/No", value: farmerFieldId },
+        { label: "farmerCode", value: farmerCode },
+        { label: "Farmer", value: farmerName },
+        { label: "Latitude", value: "" },
+        { label: "Longitude", value: "" },
+        { label: "Captured on", value: "" },
+      ];
+
+      // Draw table data
+      let y = image.height - 140;
+      tableData.forEach(({ label, value }) => {
+        context.fillText(`${label}:`, 20, y);
+        context.fillText(value, 120, y);
+        y += lineHeight;
+      });
+
+      // Convert the canvas content to a data URL
+      const dataURL = canvas.toDataURL("image/jpeg");
+      setFarmerSNeftCopyImage(dataURL);
+    };
+
+    image.src = imageSrc;
+  };
+
   const handleSNeftCopyCapture = (dataUri) => {
     setFarmerSNeftCopyImage(dataUri);
     setShowSNeftCopyCamera(false);
     getSNeftCopyLocation();
+    drawTable(dataUri);
   };
 
   const handleSNeftCopyFileUpload = (event) => {
@@ -128,9 +185,6 @@ const SNeftCopyCts = ({
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
           setSNeftCopyLocation({ latitude, longitude });
-          console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-
-          // Set SNeftCopy capturedDateTime to the current date and time
           setSNeftCopyCapturedDateTime(new Date().toLocaleString());
         },
         (error) => {
@@ -143,51 +197,60 @@ const SNeftCopyCts = ({
   };
 
   useEffect(() => {
-    // Combine the captured image and table into a single image
-    if (farmerSNeftCopyImage && sNeftCopyLocation) {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (farmerSNeftCopyImage && sNeftCopyLocation && !tableAttached.current) {
       const image = new Image();
 
       image.onload = () => {
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d");
 
-        // Set canvas dimensions to match the captured image
         canvas.width = image.width;
         canvas.height = image.height;
 
-        // Draw the captured image onto the canvas
         context.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-        // Draw the table onto the canvas
+        // Draw semi-transparent light green background for the table
+        context.fillStyle = "rgba(27, 190, 173, 0.4)";
+        context.fillRect(10, image.height - 160, canvas.width - 20, 140);
+
+        // Draw table border
+        context.strokeStyle = "black";
+        context.lineWidth = 1;
+        context.strokeRect(10, image.height - 160, canvas.width - 20, 140);
+
         context.font = "14px Arial";
-        context.fillStyle = "white";
+        context.fillStyle = "black"; // Change text color to black for better visibility
 
-        // Add your table data here (similar to the FarmerSubsidyCts section)
-        const sNoText = `Farmer S/No : ${farmerFieldId}`;
-        const latitudeText = `Latitude   : ${sNeftCopyLocation?.latitude.toFixed(
-          7
-        )}`;
-        const longitudeText = `Longitude : ${sNeftCopyLocation?.longitude.toFixed(
-          7
-        )}`;
-        const farmerNameText = `Farmer :  ${farmerName}`;
-        const farmerNameTitleText = `${farmerNameTitle} : ${farmerFather}`;
-        const dateTimeText = `Captured on: ${sNeftCopyCapturedDateTime}`;
+        const lineHeight = 20; // Adjust line height for better readability
 
-        context.font = "bold 14px Arial"; // Set bold font
-        context.fillText(sNoText, 20, image.height - 140); // Place at the top
-        context.font = "14px Arial"; // Reset font
+        const tableData = [
+          { label: "Farmer S/No", value: farmerFieldId },
+          { label: "farmerCode", value: farmerCode },
+          { label: "Farmer", value: farmerName },
+          { label: "Latitude", value: sNeftCopyLocation?.latitude.toFixed(7) },
+          {
+            label: "Longitude",
+            value: sNeftCopyLocation?.longitude.toFixed(7),
+          },
+          { label: "Captured on", value: sNeftCopyCapturedDateTime },
+        ];
 
-        context.fillText(latitudeText, 10, image.height - 120);
-        context.fillText(longitudeText, 10, image.height - 100);
-        context.fillText(farmerNameText, 10, image.height - 80);
-        context.fillText(farmerNameTitleText, 10, image.height - 60);
-        context.fillText(dateTimeText, 10, image.height - 40);
+        // Draw table data
+        let y = image.height - 140;
+        tableData.forEach(({ label, value }) => {
+          context.fillText(`${label}:`, 20, y);
+          context.fillText(value, 120, y);
+          y += lineHeight;
+        });
 
         // Convert the canvas content to a data URL
         const dataURL = canvas.toDataURL("image/jpeg");
-        setFarmerSNeftCopyImage(dataURL);
         setNeftCopyImage(dataURL);
+        tableAttached.current = true;
       };
 
       image.src = farmerSNeftCopyImage;
@@ -195,12 +258,14 @@ const SNeftCopyCts = ({
   }, [
     farmerSNeftCopyImage,
     sNeftCopyLocation,
-    farmerName,
-    farmerFather,
-    farmerNameTitle,
+    farmerFieldId,
     sNeftCopyCapturedDateTime,
+    farmerCode,
+    farmerName,
   ]);
 
+  const defaultImageUrl = `https://sfamsserver.in/uploads/docs/${sbsidypic}`;
+  console.log(defaultImageUrl);
   return (
     <SNeftCopyContainer id="sNeftCopyContainer">
       <Headp>Subsidy Neft Copy</Headp>
@@ -231,7 +296,13 @@ const SNeftCopyCts = ({
         ></FarmerSNeftCopyPreview>
       )}
       {farmerSNeftCopyImage ? null : (
-        <SNeftCopyPhotoText>Empty</SNeftCopyPhotoText>
+        <SNeftCopyPhotoText>
+          <img
+            src={defaultImageUrl}
+            alt="Default"
+            style={{ width: "100%", height: "-webkit-fill-available" }}
+          />
+        </SNeftCopyPhotoText>
       )}
     </SNeftCopyContainer>
   );

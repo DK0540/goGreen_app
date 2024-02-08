@@ -19,3 +19,43 @@
     font-family: 'Noto Sans KR', sans-serif;
     letter-spacing: 2px;
 }
+
+.foemHeader{
+    margin-right: 260px;
+
+    @media only screen and (max-width: 600px) {
+        position: relative;
+        left: -26%;
+        margin-right: 100px;
+        color:rgb(255, 255, 255);
+        height: 80px;
+      }
+}
+
+.countdiv{
+    width: 33px;
+    height: 33px;
+    border-radius: 50%;
+    background-color: rgb(255 111 111 / 89%);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    position: absolute;
+    top: -26px;
+    left: 15px;
+}
+
+.vcountdiv{
+    width: 33px;
+    height: 33px;
+    border-radius: 50%;
+    background-color: rgb(255 111 111 / 89%);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    position: absolute;
+    top: -26px;
+    left: 73px;
+}
+/*old css above*/
+

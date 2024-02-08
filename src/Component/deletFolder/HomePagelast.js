@@ -293,10 +293,7 @@ const HomePage = ({ device_uuid, userName, setUserName }) => {
     navigate("/user");
     setUserName(username);
   };
-  //reload function
-  // const handleReloadComponent = () => {
-  //   setReloadComponent(true);
-  // };
+
   return (
     <Body>
       <HeadSection>
